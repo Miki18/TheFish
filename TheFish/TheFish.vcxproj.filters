@@ -45,6 +45,12 @@
     <ClCompile Include="Textures.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="Display.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Plant.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -78,6 +84,12 @@
       <Filter>Pliki zasobów</Filter>
     </ClInclude>
     <ClInclude Include="Includes.h">
+      <Filter>Pliki zasobów</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Pliki zasobów</Filter>
+    </ClInclude>
+    <ClInclude Include="Plant.h">
       <Filter>Pliki zasobów</Filter>
     </ClInclude>
   </ItemGroup>

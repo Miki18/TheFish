@@ -9,3 +9,9 @@
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 #include <random>
+#include <string>
+#include <cstdlib>
+#include <thread>
+
+const int ScreenSizeX = 1280;
+const int ScreenSizeY = 720;

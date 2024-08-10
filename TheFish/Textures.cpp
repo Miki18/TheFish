@@ -4,15 +4,15 @@
 #include "Textures.h"
 #include "Includes.h"
 
-GLuint Background;
-GLuint Plant;
-GLuint Fishes[1][2];
+GLuint BackgroundTex;
+GLuint PlantTex;
+GLuint FishesTex[1][2];
 
 void LoadBackgroundTexture()
 {
 	//gl Gen Texture and blind texture
-	glGenTextures(1, &Background);
-	glBindTexture(GL_TEXTURE_2D, Background);
+	glGenTextures(1, &BackgroundTex);
+	glBindTexture(GL_TEXTURE_2D, BackgroundTex);
 
 	//texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -29,8 +29,8 @@ void LoadBackgroundTexture()
 	//Variables
 	char header[54];  //bmp header (it has 54 chars)
 	file.read(header, 54);
-	int width = 1280;     //texture size (pixels)
-	int height = 720;
+	int width = ScreenSizeX;     //texture size (pixels)
+	int height = ScreenSizeY;
 
 	//Load pixels' data
 	int size = 3 * width * height;    //width * height = total number of pixels and multiply by 3, because every pixel has R G B parameters (no alpha)
@@ -102,9 +102,9 @@ void LoadAllTextures()
 	LoadBackgroundTexture();
 
 	//Plant
-	LoadObjectTexture(std::ref(Plant), "Plant.bmp");
+	LoadObjectTexture(std::ref(PlantTex), "Plant.bmp");
 
 	//Player Fish
-	LoadObjectTexture(std::ref(Fishes[0][0]), "PlayerFish.bmp");
-	LoadObjectTexture(std::ref(Fishes[0][1]), "PlayerFishEat.bmp");
+	LoadObjectTexture(std::ref(FishesTex[0][0]), "PlayerFish.bmp");
+	LoadObjectTexture(std::ref(FishesTex[0][1]), "PlayerFishEat.bmp");
 }
