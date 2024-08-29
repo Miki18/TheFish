@@ -6,7 +6,7 @@ class Plant
 private:
 	double Goal;
 	ImVec2 PlantPosition;
-	int size = 15;
+	int size = 10;
 	void SelectNextGoal();
 
 public:

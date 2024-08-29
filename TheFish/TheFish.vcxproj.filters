@@ -16,6 +16,12 @@
     <Filter Include="Pliki zasobów\imgui">
       <UniqueIdentifier>{0f8ef41d-ec9c-48a4-98b2-9768fd54ef18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pliki zasobów\Fishes">
+      <UniqueIdentifier>{25a966bb-e576-4eb2-9643-595023cddf19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\Fishes">
+      <UniqueIdentifier>{f77ba13a-24c0-429e-bcbb-890987376eb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -50,6 +56,9 @@
     </ClCompile>
     <ClCompile Include="Plant.cpp">
       <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="Fish.cpp">
+      <Filter>Pliki źródłowe\Fishes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="Plant.h">
       <Filter>Pliki zasobów</Filter>
+    </ClInclude>
+    <ClInclude Include="Fish.h">
+      <Filter>Pliki zasobów\Fishes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

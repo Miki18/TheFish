@@ -3,6 +3,7 @@
 #pragma once
 #include "Includes.h"
 #include "Plant.h"
+#include "Fish.h"
 
 void ShowBackground();   //Show Background
 
@@ -12,6 +13,8 @@ void ShowPlayerFish(ImVec2 Fish_pos, bool turn, bool IsOpen);  //Show player fis
 //turn - determines if fish is swimming from left to right or vice versa        IsOpen sets it's mouth open or close
 
 void ShowPlant(std::string Name, std::vector<Plant>& plants, int i);    //Show plants; name is window name, vector contains all plants' instances, i is instance number
+
+void ShowFish(std::string Name, std::vector<Fish>& fishes, int i);
 
 void ColorAndNewFrame(); //we need to do this every time in main loop (at start)
 

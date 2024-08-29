@@ -9,6 +9,7 @@
 #include "Includes.h"
 #include "Display.h"
 #include "Plant.h"
+#include "Fish.h"
 
 void EatThread(bool& PlayerFish, int i, bool& isOpen)
 {
@@ -26,6 +27,24 @@ void EatThread(bool& PlayerFish, int i, bool& isOpen)
 
 	isOpen = false;       //move player's fish and close it's mouth
 	PlayerFish = false;
+}
+
+void FishEatPlant(bool& IsEating, bool& IsOpen, int plant_number)
+{
+	IsEating = true;
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+
+	IsOpen = true;
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+
+	plants.erase(plants.begin() + plant_number);
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+
+	IsOpen = false;
+	IsEating = false;
 }
 
 int main()
@@ -64,6 +83,7 @@ int main()
 	//Load Textures
 	LoadAllTextures();
 
+	//Player fish variables
     ImVec2 previous_pos = ImGui::GetMousePos(); //fish control variables
 	ImVec2 Mouse_pos;
 	ImVec2 Fish_pos;
@@ -75,6 +95,8 @@ int main()
 	double PassedTime = 0;
 
 	int Points = 0;  //Points
+
+	bool test = false;
 
 	srand(time(NULL));   //for rand() function
 
@@ -112,6 +134,38 @@ int main()
 			Mouse_pos.y = ScreenSizeY - 25;
 		}
 
+		//check collisions
+		for (int i = 0; i < plants.size(); i++)   //player fish and plants collision
+		{
+			if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(12, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
+			{
+				if (plants[i].isMoving == true and PlayerFishEat == false)  //we can't call the same thread twice (and we can't eat the same plant twice) and we can't eat 2 things at once
+				{
+					plants[i].isMoving = false;  //block
+					Points = Points + 10;                //increase points
+					std::thread Eating(EatThread, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
+					Eating.detach();   //create thread
+				}
+			}
+		}
+
+		for (int i = 0; i < plants.size(); i++)  //fishes and plants collision
+		{
+			for (int a = 0; a < fishes.size(); a++)
+			{
+				if (pow(fishes[a].getPosition().x - plants[i].getPlantPosition().x, 2) + pow(fishes[a].getPosition().y - plants[i].getPlantPosition().y, 2) < pow(fishes[a].getSize()/2, 2))
+				{
+					if (plants[i].isMoving == true and fishes[a].IsMoving == true and fishes[a].IsEating == false)
+					{
+						plants[i].isMoving = false;
+						fishes[a].IsEating = true;
+						std::thread Eating(FishEatPlant, std::ref(fishes[a].IsEating), std::ref(fishes[a].IsOpen), i);
+						Eating.detach();
+					}
+				}
+			}
+		}
+
 		//update fish position
 		if (PlayerFishEat == false)
 		{
@@ -133,26 +187,26 @@ int main()
 			}
 		}
 
-		//update plant
-		for (int i = 0; i < plants.size(); i++)
+		if (CurrentTime >= NextFishSpawnTime)
 		{
-			ImVec2 objectPosition = plants[i].getPlantPosition();   //help variable (we need x and y)
-			if (abs(Fish_pos.x - objectPosition.x) < (plants[i].getSize() + 25)/3 and abs(Fish_pos.y - objectPosition.y) < (plants[i].getSize() + 25) / 3)   //if player get close enough
+			fishes.emplace_back();
+
+			NextFishSpawnTime = CurrentTime + 1 + rand() % 7;
+		}
+
+		for (int i = 0; i < plants.size(); i++) //update plants position
+		{
+			if (plants[i].isMoving == true)
 			{
-				if (plants[i].isMoving == true)  //we can't call the same thread twice
-				{
-					plants[i].isMoving = false;  //block
-					Points = Points + 10;                //increase points
-					std::thread Eating(EatThread, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
-					Eating.detach();   //create thread
-				}
+				plants[i].Move(PassedTime);
 			}
-			else
+		}
+
+		for (int i = 0; i < fishes.size(); i++)  //update fish position
+		{
+			if (fishes[i].IsEating == false and fishes[i].IsMoving == true)
 			{
-				if (plants[i].isMoving == true)  //if player is not eating plant than it can move
-				{
-					plants[i].Move(PassedTime);   //update plants position
-				}
+				fishes[i].Move(PassedTime);
 			}
 		}
 
@@ -185,6 +239,13 @@ int main()
 			std::string Name = "Plant " + std::to_string(i);
 
 			ShowPlant(Name, plants, i);
+		}
+
+		for (int i = 0; i < fishes.size(); i++)
+		{
+			std::string Name = "Fish " + std::to_string(i);
+
+			ShowFish(Name, fishes, i);
 		}
 
 		ShowPoints(Points);

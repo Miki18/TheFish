@@ -12,6 +12,7 @@
 #include <string>
 #include <cstdlib>
 #include <thread>
+#include <cmath>
 
 const int ScreenSizeX = 1280;
 const int ScreenSizeY = 720;
