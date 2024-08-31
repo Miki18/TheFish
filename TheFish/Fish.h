@@ -8,6 +8,7 @@ private:
 	ImVec2 Goal;
 	int lvl;
 	int size;
+	int points;
 	float speed;
 public:
 	Fish();
@@ -17,6 +18,7 @@ public:
 	int getSize();
 	bool getTurn();
 	int getlvl();
+	int getPoints();
 	bool IsEating;   //when fish eat something
 	bool IsMoving;   //when fish is eating
 	bool IsOpen;      //open/close mouth

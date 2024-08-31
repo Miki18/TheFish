@@ -22,7 +22,7 @@ void ShowPlayerFish(ImVec2 Fish_pos, bool turn, bool IsOpen)
 	ImGui::Begin("Player", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);   //Title & flags
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	ImVec2 imageSize = ImVec2(25, 25);
+	ImVec2 imageSize = ImVec2(25, 25);         //!!!! player fish size
 	ImVec2 cursorPos = ImVec2((windowSize.x - imageSize.x) * 0.5f - 2.5, (windowSize.y - imageSize.y) * 0.5f);
 	ImGui::SetCursorPos(cursorPos);
 

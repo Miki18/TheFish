@@ -9,11 +9,13 @@ Fish::Fish()
 	case 1:
 		size = 20;
 		speed = 150;
+		points = 25;
 		break;
 	
 	case 2:
 		size = 35;
-		speed = 75;
+		speed = 100;
+		points = 45;
 		break;
 	}
 
@@ -92,6 +94,11 @@ int Fish::getSize()
 int Fish::getlvl()
 {
 	return lvl;
+}
+
+int Fish::getPoints()
+{
+	return points;
 }
 
 double NextFishSpawnTime = 0;
