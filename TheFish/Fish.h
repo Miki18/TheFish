@@ -11,7 +11,7 @@ private:
 	int points;
 	float speed;
 public:
-	Fish();
+	Fish(int game_level);
 	void ChooseNextDestination();
 	void Move(double PassedTime);
 	ImVec2 getPosition();

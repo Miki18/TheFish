@@ -15,14 +15,14 @@ void ShowBackground()
 	ImGui::End();  //end
 }
 
-void ShowPlayerFish(ImVec2 Fish_pos, bool turn, bool IsOpen)
+void ShowPlayerFish(ImVec2 Fish_pos, bool turn, bool IsOpen, int size)   //add size variable
 {
 	ImGui::SetNextWindowPos(Fish_pos);   //fish positon = window position
-	ImGui::SetNextWindowSize(ImVec2(25, 25));
+	ImGui::SetNextWindowSize(ImVec2(size, size));
 	ImGui::Begin("Player", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);   //Title & flags
 
 	ImVec2 windowSize = ImGui::GetWindowSize();
-	ImVec2 imageSize = ImVec2(25, 25);         //!!!! player fish size
+	ImVec2 imageSize = ImVec2(size, size);
 	ImVec2 cursorPos = ImVec2((windowSize.x - imageSize.x) * 0.5f - 2.5, (windowSize.y - imageSize.y) * 0.5f);
 	ImGui::SetCursorPos(cursorPos);
 
@@ -88,6 +88,17 @@ void ShowPoints(int Points)
 	ImGui::End();    //end
 }
 
+void ShowGoal(int Goal)
+{
+	ImGui::SetNextWindowPos(ImVec2(0, 40));   //set positions - goal will be under points
+	ImGui::SetNextWindowSize(ImVec2(180, 40));    //size
+	ImGui::Begin("Goal", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);  //title & flags
+	ImGui::SetWindowFontScale(1.5f);  //text size
+	ImGui::SetCursorPos(ImVec2(8, 10));  //it sets text in the right place
+	ImGui::Text("Goal: %d", Goal);  //text
+	ImGui::End();    //end
+}
+
 void ColorAndNewFrame()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); //black color
@@ -98,8 +109,46 @@ void ColorAndNewFrame()
 	ImGui::NewFrame();
 }
 
+void ShowText(std::string text)
+{
+	ImGui::SetNextWindowPos(ImVec2(ScreenSizeX / 2 - 125, 100));   //Position
+	ImGui::SetNextWindowSize(ImVec2(450, 200));    //size
+	ImGui::Begin("ShowText", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);  //title & flags
+	ImGui::SetWindowFontScale(4.0f);  //text size
+	ImGui::Text(text.c_str());  //text
+	ImGui::End();    //end
+}
+
 void ImGuiRender()
 {
 	ImGui::Render();  //Imgui render
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+void ShowExit()
+{
+	ImGui::SetNextWindowPos(ImVec2(ScreenSizeX/2 + 100, 300));   //position - under text on the right
+	ImGui::SetNextWindowSize(ImVec2(200, 100));    //windows size
+	ImGui::Begin("Exit", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+	ImGui::SetWindowFontScale(3.0f);    //text size
+	if (ImGui::Button("Exit"))   //button
+	{
+		exit(0);   //if player clicks button then exit game
+	}
+	ImGui::End();    //end
+}
+
+void ShowPlayLevel(std::string text)
+{
+	ImGui::SetNextWindowPos(ImVec2(ScreenSizeX/2 - 200, 300));   //position - under text on the left
+	ImGui::SetNextWindowSize(ImVec2(250, 100));       //window size
+	ImGui::Begin("PlayLevel", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBackground);
+	ImGui::SetWindowFontScale(3.0f);    //text size
+	if (ImGui::Button(text.c_str()))    //button with text
+	{
+		GameScreen = 0;     //if player clicks on button - start level
+	}
+	ImGui::End();   //end
+}
+
+int GameScreen;     //for select game screen; 0 - game screen, 1 - you died screen, 2 - next level screen, 3 - you won screen

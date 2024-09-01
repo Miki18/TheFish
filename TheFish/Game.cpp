@@ -130,224 +130,322 @@ int main()
 	ImVec2 Fish_pos;
 	bool PlayerFishEat = false;   //for not moving
 	bool PlayerFishOpen = false;   //for open mouth
-	int PlayerFishSize = 25;
+	int PlayerFishSize = 25;       //change this in "GameScreen == 2"
 
 	double LastFrameTime = 0;    //time variables
 	double CurrentTime = 0;
 	double PassedTime = 0;
 
 	int Points = 0;  //Points
-
-	bool test = false;
+	int Goal = 500;  //Goal - player has to get it to go to next level
+	int CurrentLevel = 1;    //Current level (player starts from 1st level)
+	GameScreen = 0;          //set game screen value (when player starts game it always is 0)
 
 	srand(time(NULL));   //for rand() function
 
 	while (!glfwWindowShouldClose(window))    //process inputs() update state() display state()
 	{
-		//Process inputs()
-		CurrentTime = glfwGetTime();
-		Mouse_pos = ImGui::GetMousePos();
-		
-		//Update state()
-		PassedTime = CurrentTime - LastFrameTime;
-
-		//Change mouse position, so mouse cursor will be in the middle of the player's fish image
-		Mouse_pos.x = Mouse_pos.x - PlayerFishSize / 2;
-		Mouse_pos.y = Mouse_pos.y - PlayerFishSize / 2;
-
-		//mouse can't go out of background image (it is limited to 0 - 1280 x and 0 - 720 y)
-		if (Mouse_pos.x <= 0)
+		if (GameScreen == 0)   //if nothing happened
 		{
-			Mouse_pos.x = 0;
-		}
+			//Process inputs()
+			CurrentTime = glfwGetTime();
+			Mouse_pos = ImGui::GetMousePos();
 
-		if (Mouse_pos.x >= ScreenSizeX - PlayerFishSize)
-		{
-			Mouse_pos.x = ScreenSizeX - PlayerFishSize;
-		}
+			//Update state()
+			PassedTime = CurrentTime - LastFrameTime;
 
-		if (Mouse_pos.y <= 0)
-		{
-			Mouse_pos.y = 0;
-		}
+			//Change mouse position, so mouse cursor will be in the middle of the player's fish image
+			Mouse_pos.x = Mouse_pos.x - PlayerFishSize / 2;
+			Mouse_pos.y = Mouse_pos.y - PlayerFishSize / 2;
 
-		if (Mouse_pos.y >= ScreenSizeY - PlayerFishSize)
-		{
-			Mouse_pos.y = ScreenSizeY - PlayerFishSize;
-		}
-
-		//check collisions
-		for (int i = 0; i < plants.size(); i++)   //player fish and plants collision
-		{
-			if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize/2, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
+			//mouse can't go out of background image (it is limited to 0 - 1280 x and 0 - 720 y)
+			if (Mouse_pos.x <= 0)
 			{
-				if (plants[i].isMoving == true and PlayerFishEat == false)  //we can't call the same thread twice (and we can't eat the same plant twice) and we can't eat 2 things at once
-				{
-					plants[i].isMoving = false;  //block
-					Points = Points + 10;                //increase points
-					std::thread Eating(PlayerEatPlant, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
-					Eating.detach();   //create thread
-				}
+				Mouse_pos.x = 0;
 			}
-		}
 
-		for (int i = 0; i < plants.size(); i++)  //fishes and plants collision
-		{
-			for (int a = 0; a < fishes.size(); a++)
+			if (Mouse_pos.x >= ScreenSizeX - PlayerFishSize)
 			{
-				if (pow(fishes[a].getPosition().x - plants[i].getPlantPosition().x, 2) + pow(fishes[a].getPosition().y - plants[i].getPlantPosition().y, 2) < pow(fishes[a].getSize()/2, 2))
+				Mouse_pos.x = ScreenSizeX - PlayerFishSize;
+			}
+
+			if (Mouse_pos.y <= 0)
+			{
+				Mouse_pos.y = 0;
+			}
+
+			if (Mouse_pos.y >= ScreenSizeY - PlayerFishSize)
+			{
+				Mouse_pos.y = ScreenSizeY - PlayerFishSize;
+			}
+
+			//check collisions
+			for (int i = 0; i < plants.size(); i++)   //player fish and plants collision
+			{
+				if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize / 2, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
 				{
-					if (plants[i].isMoving == true and fishes[a].IsMoving == true and fishes[a].IsEating == false)  //check if plants and fish are moving (nothing is eating them) and if fish is not eating something else
+					if (plants[i].isMoving == true and PlayerFishEat == false)  //we can't call the same thread twice (and we can't eat the same plant twice) and we can't eat 2 things at once
 					{
-						plants[i].isMoving = false;   //block
-						fishes[a].IsEating = true;    //fish is eating
-						std::thread Eating(FishEatPlant, std::ref(fishes[a].IsEating), std::ref(fishes[a].IsOpen), i);   //thread
-						Eating.detach();
+						plants[i].isMoving = false;  //block
+						Points = Points + 10;                //increase points
+						std::thread Eating(PlayerEatPlant, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
+						Eating.detach();   //create thread
 					}
 				}
 			}
-		}
 
-		for (int i = 0; i < fishes.size(); i++)    //player fish and other fishes
-		{
-			if(pow(fishes[i].getPosition().x - Fish_pos.x,2) + pow(fishes[i].getPosition().y - Fish_pos.y,2) < pow(fishes[i].getSize()/2.5 + PlayerFishSize /2.5, 2))
+			for (int i = 0; i < plants.size(); i++)  //fishes and plants collision
 			{
-				if (fishes[i].getSize() <= PlayerFishSize)    //if fish is smaller than player's fish then player's fish eat that fish
+				for (int a = 0; a < fishes.size(); a++)
 				{
-					if (fishes[i].IsMoving == true and fishes[i].IsEating == false and PlayerFishEat == false)   //check if something is not eating this fish, if fish is not eating something and if player is not eating something
+					if (pow(fishes[a].getPosition().x - plants[i].getPlantPosition().x, 2) + pow(fishes[a].getPosition().y - plants[i].getPlantPosition().y, 2) < pow(fishes[a].getSize() / 2, 2))
 					{
-						fishes[i].IsMoving = false;  //block
-						Points = Points + fishes[i].getPoints();
-						std::thread Eating(PlayerEatFish, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));
-						Eating.detach();
+						if (plants[i].isMoving == true and fishes[a].IsMoving == true and fishes[a].IsEating == false)  //check if plants and fish are moving (nothing is eating them) and if fish is not eating something else
+						{
+							plants[i].isMoving = false;   //block
+							fishes[a].IsEating = true;    //fish is eating
+							std::thread Eating(FishEatPlant, std::ref(fishes[a].IsEating), std::ref(fishes[a].IsOpen), i);   //thread
+							Eating.detach();
+						}
 					}
 				}
-				else
-				{
-					std::cout << "loser" << std::endl;
-					//break loop - u lose
-				}
 			}
-		}
 
-		//fish eat fish
-		for (int i = 0; i < fishes.size(); i++)   //we check every fish with each other
-		{
-			for (int a = i+1; a < fishes.size() - i; a++)
+			for (int i = 0; i < fishes.size(); i++)    //player fish and other fishes
 			{
-				if (pow(fishes[i].getPosition().x - fishes[a].getPosition().x, 2) + pow(fishes[i].getPosition().y - fishes[a].getPosition().y, 2) < pow(fishes[i].getSize() / 2.5 + fishes[a].getSize() / 2.5, 2))  //collision
+				if (pow(fishes[i].getPosition().x - Fish_pos.x, 2) + pow(fishes[i].getPosition().y - Fish_pos.y, 2) < pow(fishes[i].getSize() / 2.5 + PlayerFishSize / 2.5, 2))
 				{
-					//check lvl - fish with higher level eats fish with smaller level; if levels are equal do nothing (we could compare fish with size - results would be the same)
-					if (fishes[i].getlvl() < fishes[a].getlvl())
+					if (fishes[i].getSize() <= PlayerFishSize)    //if fish is smaller than player's fish then player's fish eat that fish
 					{
-						if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)  //check if fishes aren't eating and something doesn't eat them
+						if (fishes[i].IsMoving == true and fishes[i].IsEating == false and PlayerFishEat == false)   //check if something is not eating this fish, if fish is not eating something and if player is not eating something
 						{
 							fishes[i].IsMoving = false;  //block
-							std::thread Eating(FishEatFish, a, i);
+							Points = Points + fishes[i].getPoints();
+							std::thread Eating(PlayerEatFish, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));
 							Eating.detach();
 						}
 					}
-					else if(fishes[i].getlvl() > fishes[a].getlvl())
+					else
 					{
-						if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)
+						GameScreen = 1;
+						//break loop - u lose
+					}
+				}
+			}
+
+			//fish eat fish
+			for (int i = 0; i < fishes.size(); i++)   //we check every fish with each other
+			{
+				for (int a = i + 1; a < fishes.size() - i; a++)
+				{
+					if (pow(fishes[i].getPosition().x - fishes[a].getPosition().x, 2) + pow(fishes[i].getPosition().y - fishes[a].getPosition().y, 2) < pow(fishes[i].getSize() / 2.5 + fishes[a].getSize() / 2.5, 2))  //collision
+					{
+						//check lvl - fish with higher level eats fish with smaller level; if levels are equal do nothing (we could compare fish with size - results would be the same)
+						if (fishes[i].getlvl() < fishes[a].getlvl())
 						{
-							fishes[a].IsMoving = false;  //block
-							std::thread Eating(FishEatFish, i, a);
-							Eating.detach();
+							if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)  //check if fishes aren't eating and something doesn't eat them
+							{
+								fishes[i].IsMoving = false;  //block
+								std::thread Eating(FishEatFish, a, i);
+								Eating.detach();
+							}
+						}
+						else if (fishes[i].getlvl() > fishes[a].getlvl())
+						{
+							if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)
+							{
+								fishes[a].IsMoving = false;  //block
+								std::thread Eating(FishEatFish, i, a);
+								Eating.detach();
+							}
 						}
 					}
 				}
 			}
-		}
 
-		//update fish position
-		if (PlayerFishEat == false)
-		{
-			Fish_pos.x = Fish_pos.x + ((Mouse_pos.x - Fish_pos.x) * 5 * PassedTime);
-			Fish_pos.y = Fish_pos.y + ((Mouse_pos.y - Fish_pos.y) * 5 * PassedTime);
-		}
-
-		if (CurrentTime >= NextPlantSpawnTime)    //NextPlantSpawnTime controls how often new plant appears
-		{
-			if (rand() % 3 == 0)   //probability if plant spawns when it's time
+			//update fish position
+			if (PlayerFishEat == false)
 			{
-				plants.emplace_back();   //create a new instance of plant class
-
-				NextPlantSpawnTime = CurrentTime + 0.5 + rand() % 2;   //random value for NextPlantSpawnTime
+				Fish_pos.x = Fish_pos.x + ((Mouse_pos.x - Fish_pos.x) * 5 * PassedTime);
+				Fish_pos.y = Fish_pos.y + ((Mouse_pos.y - Fish_pos.y) * 5 * PassedTime);
 			}
-			else    //if plant don't spawn we'll wait for half second for next try (only half second)
+
+			if (CurrentTime >= NextPlantSpawnTime)    //NextPlantSpawnTime controls how often new plant appears
 			{
-				NextPlantSpawnTime = CurrentTime + 0.5;
+				if (rand() % 3 == 0)   //probability if plant spawns when it's time
+				{
+					plants.emplace_back();   //create a new instance of plant class
+
+					NextPlantSpawnTime = CurrentTime + 0.5 + rand() % 2;   //random value for NextPlantSpawnTime
+				}
+				else    //if plant don't spawn we'll wait for half second for next try (only half second)
+				{
+					NextPlantSpawnTime = CurrentTime + 0.5;
+				}
 			}
-		}
 
-		if (CurrentTime >= NextFishSpawnTime)
-		{
-			fishes.emplace_back();
-
-			NextFishSpawnTime = CurrentTime + 1 + rand() % 7;
-		}
-
-		for (int i = 0; i < plants.size(); i++) //update plants position
-		{
-			if (plants[i].isMoving == true)
+			if (CurrentTime >= NextFishSpawnTime)
 			{
-				plants[i].Move(PassedTime);
-			}
-		}
+				fishes.emplace_back(CurrentLevel);
 
-		for (int i = 0; i < fishes.size(); i++)  //update fish position
-		{
-			if (fishes[i].IsEating == false and fishes[i].IsMoving == true)
+				NextFishSpawnTime = CurrentTime + 1 + rand() % 7;
+			}
+
+			for (int i = 0; i < plants.size(); i++) //update plants position
 			{
-				fishes[i].Move(PassedTime);
+				if (plants[i].isMoving == true)
+				{
+					plants[i].Move(PassedTime);
+				}
 			}
+
+			for (int i = 0; i < fishes.size(); i++)  //update fish position
+			{
+				if (fishes[i].IsEating == false and fishes[i].IsMoving == true)
+				{
+					fishes[i].Move(PassedTime);
+				}
+			}
+
+			//update last frame time value
+			LastFrameTime = CurrentTime;
+
+			if (Goal <= Points)   //check if player has enough points to finish level
+			{
+				GameScreen = 2;   //there will be 5 levels, so if current level == 5 then go to GameScreen = 3;
+			}
+
+			//Display()
+			ColorAndNewFrame();
+
+			//show image
+			ShowBackground();
+
+			//Show player fish
+			if (previous_pos.x < Mouse_pos.x)
+			{
+				ShowPlayerFish(Fish_pos, false, PlayerFishOpen, PlayerFishSize);
+			}
+			else
+			{
+				ShowPlayerFish(Fish_pos, true, PlayerFishOpen, PlayerFishSize);
+			}
+
+			//update previous position (it has to be after show player fish)
+			previous_pos.x = Fish_pos.x;
+			previous_pos.y = Fish_pos.y;
+
+			//Plant display
+			for (int i = 0; i < plants.size(); i++)
+			{
+				std::string Name = "Plant " + std::to_string(i);
+
+				ShowPlant(Name, plants, i);
+			}
+
+			for (int i = 0; i < fishes.size(); i++)
+			{
+				std::string Name = "Fish " + std::to_string(i);
+
+				ShowFish(Name, fishes, i);
+			}
+
+			ShowPoints(Points);
+			ShowGoal(Goal);
+
+			ImGuiRender();
+
+			glfwPollEvents();
+			glfwSwapBuffers(window);
 		}
 
-		//update last frame time value
-		LastFrameTime = CurrentTime;
-
-		//Display()
-		ColorAndNewFrame();
-
-		//show image
-		ShowBackground();
-
-		//Show player fish
-		if (previous_pos.x < Mouse_pos.x)
+		if (GameScreen == 1)   //if player died
 		{
-			ShowPlayerFish(Fish_pos, false, PlayerFishOpen);
+			plants.clear();    //remove all plants and fishes
+			fishes.clear();
+			Points = 0;      //reset points
+
+			do
+			{
+				//Display()
+				ColorAndNewFrame();
+
+				//show image
+				ShowBackground();
+
+				//Show text
+				ShowText("You died!");
+
+				ShowPlayLevel("Try again");
+
+				ShowExit();
+
+				ImGuiRender();
+
+				glfwPollEvents();
+				glfwSwapBuffers(window);
+
+			} while (GameScreen != 0);
 		}
-		else
+
+		if (GameScreen == 2)    //if player go to next level
 		{
-			ShowPlayerFish(Fish_pos, true, PlayerFishOpen);
+			//plants.clear();    //remove all plants and fishes //FIX THIS SHIT
+			//fishes.clear();
+			Points = 0;      //reset points
+			CurrentLevel++;    //player goes to next level
+			Goal = Goal + 500;  //player will have to gain more points to finish next level
+			PlayerFishSize = 40;  //change it - every level have it's own player fish's size
+
+			do
+			{
+				//Display()
+				ColorAndNewFrame();
+
+				//show image
+				ShowBackground();
+
+				//Show text
+				ShowText("Level cleared");
+
+				ShowPlayLevel("Next level");
+
+				ShowExit();
+
+				ImGuiRender();
+
+				glfwPollEvents();
+				glfwSwapBuffers(window);
+
+			} while (GameScreen != 0);
 		}
 
-		//update previous position (it has to be after show player fish)
-		previous_pos.x = Fish_pos.x;
-		previous_pos.y = Fish_pos.y;
-
-		//Plant display
-		for (int i = 0; i < plants.size(); i++)
+		if (GameScreen == 3)   //if player won game (finished the last level)
 		{
-			std::string Name = "Plant " + std::to_string(i);
+			//plants.clear();    //remove all plants and fishes   //FIX THIS SHIT
+			//fishes.clear();
+			Points = 0;        //reset points
+			CurrentLevel = 1;  //reset all progress
+			Goal = 500;         //reset goal
 
-			ShowPlant(Name, plants, i);
+			//Display()
+			ColorAndNewFrame();
+
+			//show image
+			ShowBackground();
+
+			//Show text
+			ShowText("You won!");
+
+			ShowPlayLevel("Play again");
+
+			ShowExit();
+
+			ImGuiRender();
+
+			glfwPollEvents();
+			glfwSwapBuffers(window);
 		}
-
-		for (int i = 0; i < fishes.size(); i++)
-		{
-			std::string Name = "Fish " + std::to_string(i);
-
-			ShowFish(Name, fishes, i);
-		}
-
-		ShowPoints(Points);
-
-		ImGuiRender();
-
-        glfwPollEvents();
-        glfwSwapBuffers(window);
     }
 
     ImGui_ImplOpenGL3_Shutdown();

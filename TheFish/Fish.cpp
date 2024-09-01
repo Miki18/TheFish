@@ -1,20 +1,20 @@
 #include "Fish.h"
 
-Fish::Fish()
+Fish::Fish(int game_level)
 {
-	lvl = 1 + rand() % 2;
+	lvl = 1 + rand() % (game_level + 1);
 
 	switch(lvl)
 	{
 	case 1:
 		size = 20;
-		speed = 150;
+		speed = 200;
 		points = 25;
 		break;
 	
 	case 2:
 		size = 35;
-		speed = 100;
+		speed = 125;
 		points = 45;
 		break;
 	}
