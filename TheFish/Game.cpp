@@ -21,7 +21,10 @@ void PlayerEatPlant(bool& PlayerFish, int plant_number, bool& isOpen)
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-	plants.erase(plants.begin() + plant_number);    //remove plant
+	if (plants.size() > 0)  //if we finish level and clear plants vector it may cause memory trouble, therefore we have to check if plants vector is not empty
+	{
+		plants.erase(plants.begin() + plant_number);    //remove plant
+	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
@@ -39,7 +42,10 @@ void FishEatPlant(bool& IsEating, bool& IsOpen, int plant_number)
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-	plants.erase(plants.begin() + plant_number);
+	if (plants.size() > 0)  //if we finish level and clear plants vector it may cause memory trouble, therefore we have to check if plants vector is not empty
+	{
+		plants.erase(plants.begin() + plant_number);    //remove plant
+	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
@@ -57,7 +63,10 @@ void PlayerEatFish(bool& PlayerFishEat, int fish_number, bool& isOpen)
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-	fishes.erase(fishes.begin() + fish_number);
+	if (fishes.size() > 0)  //if we finish level and clear fishes vector it may cause memory trouble, therefore we have to check if fishes vector is not empty
+	{
+		fishes.erase(fishes.begin() + fish_number);
+	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
@@ -75,7 +84,10 @@ void FishEatFish(int EatingFish, int EatenFish)
 
 	std::this_thread::sleep_for(std::chrono::microseconds(25));
 
-	fishes.erase(fishes.begin() + EatenFish);     //remove fish
+	if (fishes.size() > 0)  //if we finish level and clear fishes vector it may cause memory trouble, therefore we have to check if fishes vector is not empty
+	{
+		fishes.erase(fishes.begin() + EatenFish);     //remove fish
+	}
 
 	std::this_thread::sleep_for(std::chrono::microseconds(25));
 
@@ -312,7 +324,14 @@ int main()
 
 			if (Goal <= Points)   //check if player has enough points to finish level
 			{
-				GameScreen = 2;   //there will be 5 levels, so if current level == 5 then go to GameScreen = 3;
+				if (CurrentLevel == 5) //there are 5 levels, so if current level == 5 then go to GameScreen = 3 (player finished the whole game)
+				{
+					GameScreen = 3;
+				}
+				else
+				{
+					GameScreen = 2;
+				}
 			}
 
 			//Display()
@@ -343,6 +362,7 @@ int main()
 				ShowPlant(Name, plants, i);
 			}
 
+			//Fishes display
 			for (int i = 0; i < fishes.size(); i++)
 			{
 				std::string Name = "Fish " + std::to_string(i);
@@ -390,12 +410,26 @@ int main()
 
 		if (GameScreen == 2)    //if player go to next level
 		{
-			//plants.clear();    //remove all plants and fishes //FIX THIS SHIT
-			//fishes.clear();
+			plants.clear();    //remove all plants and fishes
+			fishes.clear();
 			Points = 0;      //reset points
 			CurrentLevel++;    //player goes to next level
 			Goal = Goal + 500;  //player will have to gain more points to finish next level
-			PlayerFishSize = 40;  //change it - every level have it's own player fish's size
+			switch (CurrentLevel)    //change player fish size for different levels
+			{
+			case 2:
+				PlayerFishSize = 40;
+				break;
+			case 3:
+				PlayerFishSize = 60;
+				break;
+			case 4:
+				PlayerFishSize = 80;
+				break;
+			case 5:
+				PlayerFishSize = 120;
+				break;
+			}
 
 			do
 			{
@@ -422,11 +456,12 @@ int main()
 
 		if (GameScreen == 3)   //if player won game (finished the last level)
 		{
-			//plants.clear();    //remove all plants and fishes   //FIX THIS SHIT
-			//fishes.clear();
+			plants.clear();    //remove all plants and fishes
+			fishes.clear();
 			Points = 0;        //reset points
 			CurrentLevel = 1;  //reset all progress
 			Goal = 500;         //reset goal
+			PlayerFishSize = 25;  //Reset player fish size
 
 			//Display()
 			ColorAndNewFrame();

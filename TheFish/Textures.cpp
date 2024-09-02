@@ -6,7 +6,7 @@
 
 GLuint BackgroundTex;
 GLuint PlantTex;
-GLuint FishesTex[3][2];
+GLuint FishesTex[7][2];
 
 void LoadBackgroundTexture()
 {
@@ -115,4 +115,20 @@ void LoadAllTextures()
 	//Fish 2 texture
 	LoadObjectTexture(std::ref(FishesTex[2][0]), "fish2_close.bmp");
 	LoadObjectTexture(std::ref(FishesTex[2][1]), "fish2_open.bmp");
+
+	//Fish 3 texture
+	LoadObjectTexture(std::ref(FishesTex[3][0]), "fish3_close.bmp");
+	LoadObjectTexture(std::ref(FishesTex[3][1]), "fish3_open.bmp");
+
+	//Fish 4 texture
+	LoadObjectTexture(std::ref(FishesTex[4][0]), "fish4_close.bmp");
+	LoadObjectTexture(std::ref(FishesTex[4][1]), "fish4_open.bmp");
+
+	//Fish 5 texture
+	LoadObjectTexture(std::ref(FishesTex[5][0]), "fish5_close.bmp");
+	LoadObjectTexture(std::ref(FishesTex[5][1]), "fish5_open.bmp");
+
+	//Fish 6 texture
+	LoadObjectTexture(std::ref(FishesTex[6][0]), "fish6_close.bmp");
+	LoadObjectTexture(std::ref(FishesTex[6][1]), "fish6_open.bmp");
 }

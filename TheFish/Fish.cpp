@@ -8,15 +8,38 @@ Fish::Fish(int game_level)
 	{
 	case 1:
 		size = 20;
-		speed = 200;
+		speed = 225;
 		points = 25;
 		break;
 	
 	case 2:
 		size = 35;
-		speed = 125;
+		speed = 150;
 		points = 45;
 		break;
+
+	case 3:
+		size = 50;
+		speed = 125;
+		points = 60;
+		break;
+
+	case 4:
+		size = 75;
+		speed = 100;
+		points = 100;
+		break;
+
+	case 5:
+		size = 100;
+		speed = 50;
+		points = 200;
+		break;
+
+	case 6:
+		size = 150;
+		speed = 25;
+		points = 0;     //player will never eat this fish
 	}
 
 	if (rand() % 2 == 0)

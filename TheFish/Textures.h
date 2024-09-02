@@ -6,7 +6,7 @@
 //Variables
 extern GLuint BackgroundTex;
 extern GLuint PlantTex;
-extern GLuint FishesTex[3][2];     //Fish[0][x] is player's fish
+extern GLuint FishesTex[7][2];     //Fish[0][x] is player's fish
 //First parameter is for different fish, while second tell us if fish has close or open mouth.
 
 void LoadBackgroundTexture();    //load background texture
