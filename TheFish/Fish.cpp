@@ -1,6 +1,6 @@
 #include "Fish.h"
 
-Fish::Fish(int game_level)
+Fish::Fish(int game_level, int id)
 {
 	lvl = 1 + rand() % (game_level + 1);
 
@@ -56,6 +56,7 @@ Fish::Fish(int game_level)
 	IsMoving = true;
 	IsEating = false;
 	IsOpen = false;
+	ID = id;
 
 	ChooseNextDestination();
 }
@@ -94,7 +95,20 @@ void Fish::Move(double PassedTime)
 
 bool Fish::getTurn()
 {
-	if (Goal.x > Position.x)
+	int Position_x_rounded;  //we need to round Position.x value
+	if (Goal.x >= Position.x)       //if Goal.x is bigger we round it up, otherwise we round it down.
+	{
+		Position_x_rounded = int(Position.x + 0.5);
+	}
+	else
+	{
+		Position_x_rounded = int(Position.x);
+	}
+	
+	//We need to provide rounded value of Position.x, cause when fish goes straight down/up (Position.x and Goal.x difference was really small while Goal.y and Position.y difference was big)
+	//fish rapidly turn left and right. Position_x_rounded solve that problem.
+
+	if (Goal.x > Position_x_rounded)
 	{
 		return true;
 	}

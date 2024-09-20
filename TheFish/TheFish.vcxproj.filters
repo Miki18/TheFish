@@ -104,5 +104,8 @@
     <ClInclude Include="Fish.h">
       <Filter>Pliki zasobów\Fishes</Filter>
     </ClInclude>
+    <ClInclude Include="Music.h">
+      <Filter>Pliki zasobów</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

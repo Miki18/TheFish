@@ -10,8 +10,9 @@
 #include "Display.h"
 #include "Plant.h"
 #include "Fish.h"
+#include "Music.h"
 
-void PlayerEatPlant(bool& PlayerFish, int plant_number, bool& isOpen)
+void PlayerEatPlant(bool& PlayerFish, int plant_ID, bool& isOpen)
 {
 	PlayerFish = true;   //stop player's fish
 
@@ -23,7 +24,14 @@ void PlayerEatPlant(bool& PlayerFish, int plant_number, bool& isOpen)
 
 	if (plants.size() > 0)  //if we finish level and clear plants vector it may cause memory trouble, therefore we have to check if plants vector is not empty
 	{
-		plants.erase(plants.begin() + plant_number);    //remove plant
+		for (int i = 0; i < plants.size(); i++)
+		{
+			if (plants[i].ID == plant_ID)
+			{
+				plants.erase(plants.begin() + i);    //remove plant
+				break;
+			}
+		}
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
@@ -32,28 +40,56 @@ void PlayerEatPlant(bool& PlayerFish, int plant_number, bool& isOpen)
 	PlayerFish = false;
 }
 
-void FishEatPlant(bool& IsEating, bool& IsOpen, int plant_number)
+void FishEatPlant(int fish_ID, int plant_ID)
 {
-	IsEating = true;
+	for (int i = 0; i < fishes.size(); i++)
+	{
+		if (fishes[i].ID == fish_ID)
+		{
+			fishes[i].IsEating = true;
+			break;
+		}
+	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-	IsOpen = true;
+	for (int i = 0; i < fishes.size(); i++)
+	{
+		if (fishes[i].ID == fish_ID)
+		{
+			fishes[i].IsOpen = true;
+			break;
+		}
+	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
 	if (plants.size() > 0)  //if we finish level and clear plants vector it may cause memory trouble, therefore we have to check if plants vector is not empty
 	{
-		plants.erase(plants.begin() + plant_number);    //remove plant
+		for (int i = 0; i < plants.size(); i++)
+		{
+			if (plants[i].ID == plant_ID)
+			{
+				plants.erase(plants.begin() + i);    //remove plant
+				break;
+			}
+		}
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
 
-	IsOpen = false;
-	IsEating = false;
+	for (int i = 0; i < fishes.size(); i++)
+	{
+		if (fishes[i].ID == fish_ID)
+		{
+			fishes[i].IsOpen = false;
+			fishes[i].IsEating = false;
+			break;
+		}
+	}
 }
 
-void PlayerEatFish(bool& PlayerFishEat, int fish_number, bool& isOpen)
+void PlayerEatFish(bool& PlayerFishEat, int fish_ID, bool& isOpen)
 {
 	PlayerFishEat = true;  //stop player's fish
 
@@ -65,7 +101,14 @@ void PlayerEatFish(bool& PlayerFishEat, int fish_number, bool& isOpen)
 
 	if (fishes.size() > 0)  //if we finish level and clear fishes vector it may cause memory trouble, therefore we have to check if fishes vector is not empty
 	{
-		fishes.erase(fishes.begin() + fish_number);
+		for (int i = 0; i < fishes.size(); i++)
+		{
+			if (fishes[i].ID == fish_ID)
+			{
+				fishes.erase(fishes.begin() + i);
+				break;
+			}
+		}
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(25));
@@ -74,30 +117,53 @@ void PlayerEatFish(bool& PlayerFishEat, int fish_number, bool& isOpen)
 	PlayerFishEat = false;
 }
 
-void FishEatFish(int EatingFish, int EatenFish)
+void FishEatFish(int EatingFish_ID, int EatenFish_ID)
 {
-	fishes[EatingFish].IsEating = true;   //stop fish
+	for (int i = 0; i < fishes.size(); i++)
+	{
+		if (fishes[i].ID == EatingFish_ID)
+		{
+			fishes[i].IsEating = true;   //stop fish
+			break;
+		}
+	}
 
 	std::this_thread::sleep_for(std::chrono::microseconds(25));
 
-	fishes[EatingFish].IsOpen = true;    //open mouth
+	for (int i = 0; i < fishes.size(); i++)
+	{
+		if (fishes[i].ID == EatingFish_ID)
+		{
+			fishes[i].IsOpen = true;    //open mouth
+			break;
+		}
+	}
 
 	std::this_thread::sleep_for(std::chrono::microseconds(25));
 
 	if (fishes.size() > 0)  //if we finish level and clear fishes vector it may cause memory trouble, therefore we have to check if fishes vector is not empty
 	{
-		fishes.erase(fishes.begin() + EatenFish);     //remove fish
+		for (int i = 0; i < fishes.size(); i++)
+		{
+			if (fishes[i].ID == EatenFish_ID)
+			{
+				fishes.erase(fishes.begin() + i);     //remove fish
+				break;
+			}
+		}
 	}
 
 	std::this_thread::sleep_for(std::chrono::microseconds(25));
-
-	if (EatenFish < EatingFish)    //if we remove fish that is on lower position on vector then fish with higher position will have position lower by 1
+	
+	for (int i = 0; i < fishes.size(); i++)
 	{
-		EatingFish--;
+		if (fishes[i].ID == EatingFish_ID)
+		{
+			fishes[i].IsEating = false;
+			fishes[i].IsOpen = false;
+			break;
+		}
 	}
-
-	fishes[EatingFish].IsOpen = false;
-	fishes[EatingFish].IsEating = false;
 }
 
 int main()
@@ -136,6 +202,10 @@ int main()
 	//Load Textures
 	LoadAllTextures();
 
+	//Start Music
+	std::thread Song(PlayMusic);    //We need another thread for music
+	Song.detach();
+
 	//Player fish variables
     ImVec2 previous_pos = ImGui::GetMousePos(); //fish control variables
 	ImVec2 Mouse_pos;
@@ -152,6 +222,9 @@ int main()
 	int Goal = 500;  //Goal - player has to get it to go to next level
 	int CurrentLevel = 1;    //Current level (player starts from 1st level)
 	GameScreen = 0;          //set game screen value (when player starts game it always is 0)
+
+	int Plant_ID = 0;      //ID for fishes and plants (we need to provide unique ID for each instance);
+	int Fish_ID = 0;
 
 	srand(time(NULL));   //for rand() function
 
@@ -194,13 +267,13 @@ int main()
 			//check collisions
 			for (int i = 0; i < plants.size(); i++)   //player fish and plants collision
 			{
-				if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize / 2, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
+				if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize / 1.75, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
 				{
 					if (plants[i].isMoving == true and PlayerFishEat == false)  //we can't call the same thread twice (and we can't eat the same plant twice) and we can't eat 2 things at once
 					{
 						plants[i].isMoving = false;  //block
 						Points = Points + 10;                //increase points
-						std::thread Eating(PlayerEatPlant, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
+						std::thread Eating(PlayerEatPlant, std::ref(PlayerFishEat), plants[i].ID, std::ref(PlayerFishOpen));    //it is necessary to use thread, because that "animation" is parallel for game loop (it can't stop main loop)
 						Eating.detach();   //create thread
 					}
 				}
@@ -216,7 +289,7 @@ int main()
 						{
 							plants[i].isMoving = false;   //block
 							fishes[a].IsEating = true;    //fish is eating
-							std::thread Eating(FishEatPlant, std::ref(fishes[a].IsEating), std::ref(fishes[a].IsOpen), i);   //thread
+							std::thread Eating(FishEatPlant, fishes[a].ID, plants[i].ID);   //thread - we need to pass the ID to specify the fish/plant. We will be able to call it even if it change the position in vector
 							Eating.detach();
 						}
 					}
@@ -233,7 +306,7 @@ int main()
 						{
 							fishes[i].IsMoving = false;  //block
 							Points = Points + fishes[i].getPoints();
-							std::thread Eating(PlayerEatFish, std::ref(PlayerFishEat), i, std::ref(PlayerFishOpen));
+							std::thread Eating(PlayerEatFish, std::ref(PlayerFishEat), fishes[i].ID, std::ref(PlayerFishOpen));
 							Eating.detach();
 						}
 					}
@@ -258,7 +331,7 @@ int main()
 							if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)  //check if fishes aren't eating and something doesn't eat them
 							{
 								fishes[i].IsMoving = false;  //block
-								std::thread Eating(FishEatFish, a, i);
+								std::thread Eating(FishEatFish, fishes[a].ID, fishes[i].ID);
 								Eating.detach();
 							}
 						}
@@ -267,7 +340,7 @@ int main()
 							if (fishes[i].IsMoving == true and fishes[i].IsEating == false and fishes[a].IsMoving == true and fishes[a].IsEating == false)
 							{
 								fishes[a].IsMoving = false;  //block
-								std::thread Eating(FishEatFish, i, a);
+								std::thread Eating(FishEatFish, fishes[i].ID, fishes[a].ID);
 								Eating.detach();
 							}
 						}
@@ -286,7 +359,8 @@ int main()
 			{
 				if (rand() % 3 == 0)   //probability if plant spawns when it's time
 				{
-					plants.emplace_back();   //create a new instance of plant class
+					Plant_ID++;
+					plants.emplace_back(Plant_ID);   //create a new instance of plant class
 
 					NextPlantSpawnTime = CurrentTime + 0.5 + rand() % 2;   //random value for NextPlantSpawnTime
 				}
@@ -298,7 +372,8 @@ int main()
 
 			if (CurrentTime >= NextFishSpawnTime)
 			{
-				fishes.emplace_back(CurrentLevel);
+				Fish_ID++;
+				fishes.emplace_back(CurrentLevel, Fish_ID);
 
 				NextFishSpawnTime = CurrentTime + 1 + rand() % 7;
 			}
@@ -383,6 +458,8 @@ int main()
 		{
 			plants.clear();    //remove all plants and fishes
 			fishes.clear();
+			Fish_ID = 0;      //clear ID
+			Plant_ID = 0;
 			Points = 0;      //reset points
 
 			do
@@ -412,6 +489,8 @@ int main()
 		{
 			plants.clear();    //remove all plants and fishes
 			fishes.clear();
+			Fish_ID = 0;      //clear ID
+			Plant_ID = 0;
 			Points = 0;      //reset points
 			CurrentLevel++;    //player goes to next level
 			Goal = Goal + 500;  //player will have to gain more points to finish next level
@@ -458,6 +537,8 @@ int main()
 		{
 			plants.clear();    //remove all plants and fishes
 			fishes.clear();
+			Fish_ID = 0;      //clear ID
+			Plant_ID = 0;
 			Points = 0;        //reset points
 			CurrentLevel = 1;  //reset all progress
 			Goal = 500;         //reset goal

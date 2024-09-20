@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <thread>
 #include <cmath>
+#include <Windows.h>
 
 const int ScreenSizeX = 1280;
 const int ScreenSizeY = 720;

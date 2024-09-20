@@ -11,7 +11,7 @@ private:
 	int points;
 	float speed;
 public:
-	Fish(int game_level);
+	Fish(int game_level, int id);
 	void ChooseNextDestination();
 	void Move(double PassedTime);
 	ImVec2 getPosition();
@@ -22,6 +22,7 @@ public:
 	bool IsEating;   //when fish eat something
 	bool IsMoving;   //when fish is eating
 	bool IsOpen;      //open/close mouth
+	int ID;           //ID
 };
 
 extern double NextFishSpawnTime;

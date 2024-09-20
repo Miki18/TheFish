@@ -11,10 +11,11 @@ private:
 
 public:
 	bool isMoving;
-	Plant();
+	Plant(int id);
 	void Move(double PassedTime);
 	int getSize();
 	ImVec2 getPlantPosition();
+	int ID;
 };
 
 extern double NextPlantSpawnTime;  //for plant spawn control

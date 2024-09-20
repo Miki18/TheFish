@@ -3,12 +3,13 @@
 
 double NextPlantSpawnTime = 0;
 
-Plant::Plant()
+Plant::Plant(int id)
 {
 	PlantPosition.x = rand() % ScreenSizeX;
 	PlantPosition.y = ScreenSizeY - 40 - (rand() % 120);
 	SelectNextGoal();
 	isMoving = true;
+	ID = id;
 }
 
 int Plant::getSize()
