@@ -267,7 +267,7 @@ int main()
 			//check collisions
 			for (int i = 0; i < plants.size(); i++)   //player fish and plants collision
 			{
-				if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize / 1.75, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
+				if (pow(plants[i].getPlantPosition().x - Fish_pos.x, 2) + pow(plants[i].getPlantPosition().y - Fish_pos.y, 2) < pow(PlayerFishSize/2, 2))   //we check if player fish is close enough (radius). To detect it we use (x1 - x2)^2 + (y1 - y2)^2 < radius^2 
 				{
 					if (plants[i].isMoving == true and PlayerFishEat == false)  //we can't call the same thread twice (and we can't eat the same plant twice) and we can't eat 2 things at once
 					{
@@ -298,7 +298,7 @@ int main()
 
 			for (int i = 0; i < fishes.size(); i++)    //player fish and other fishes
 			{
-				if (pow(fishes[i].getPosition().x - Fish_pos.x, 2) + pow(fishes[i].getPosition().y - Fish_pos.y, 2) < pow(fishes[i].getSize() / 2.5 + PlayerFishSize / 2.5, 2))
+				if (pow(fishes[i].getPosition().x - Fish_pos.x, 2) + pow(fishes[i].getPosition().y - Fish_pos.y, 2) < pow(fishes[i].getSize() / 2 + PlayerFishSize / 2, 2))
 				{
 					if (fishes[i].getSize() <= PlayerFishSize)    //if fish is smaller than player's fish then player's fish eat that fish
 					{
@@ -323,7 +323,7 @@ int main()
 			{
 				for (int a = i + 1; a < fishes.size() - i; a++)
 				{
-					if (pow(fishes[i].getPosition().x - fishes[a].getPosition().x, 2) + pow(fishes[i].getPosition().y - fishes[a].getPosition().y, 2) < pow(fishes[i].getSize() / 2.5 + fishes[a].getSize() / 2.5, 2))  //collision
+					if (pow(fishes[i].getPosition().x - fishes[a].getPosition().x, 2) + pow(fishes[i].getPosition().y - fishes[a].getPosition().y, 2) < pow(fishes[i].getSize() / 2 + fishes[a].getSize() / 2, 2))  //collision
 					{
 						//check lvl - fish with higher level eats fish with smaller level; if levels are equal do nothing (we could compare fish with size - results would be the same)
 						if (fishes[i].getlvl() < fishes[a].getlvl())

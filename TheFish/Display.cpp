@@ -21,10 +21,9 @@ void ShowPlayerFish(ImVec2 Fish_pos, bool turn, bool IsOpen, int size)   //add s
 	ImGui::SetNextWindowSize(ImVec2(size, size));
 	ImGui::Begin("Player", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);   //Title & flags
 
-	ImVec2 windowSize = ImGui::GetWindowSize();
 	ImVec2 imageSize = ImVec2(size, size);
-	ImVec2 cursorPos = ImVec2((windowSize.x - imageSize.x) * 0.5f - 2.5, (windowSize.y - imageSize.y) * 0.5f);
-	ImGui::SetCursorPos(cursorPos);
+
+	ImGui::SetCursorPos(ImVec2(0,0));
 
 	if (turn == false)  //Use bool turn to show texture in the way it match with fish swimming direction
 	{
@@ -43,7 +42,6 @@ void ShowPlant(std::string Name, std::vector<Plant>& plants, int i)
 	ImGui::SetNextWindowPos(ImVec2(HelpPos.x - (plants[i].getSize() / 2), HelpPos.y - (plants[i].getSize() / 2)));     //get plant position
 	ImGui::SetNextWindowSize(ImVec2(plants[i].getSize(), plants[i].getSize()));      //set window size
 	ImGui::Begin(Name.c_str(), nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);   //name & flags
-	ImGui::SetCursorPos(ImVec2(10, 10));                        //set cursor, so plant picture will be in the middle of the window
 	ImGui::Image((void*)(intptr_t)PlantTex, ImVec2(plants[i].getSize(), plants[i].getSize()));  //image - texture name and get instance's size
 	ImGui::End();  //end
 }
@@ -55,14 +53,7 @@ void ShowFish(std::string Name, std::vector<Fish>& fishes, int i)
 	ImGui::SetNextWindowPos(ImVec2(HelpPos.x - (fishSize / 2), HelpPos.y - (fishSize / 2)));
 	ImGui::SetNextWindowSize(ImVec2(fishes[i].getSize(), fishes[i].getSize()));
 	ImGui::Begin(Name.c_str(), nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize);
-	if (fishes[i].getlvl() == 1)   //if fish level is greater than 1 then fish size = window size, so we set cursor at point (0,0), because image cover full window.
-	{								//but level 1 fish (and also plant) is so small that it's not possible to shrink window so much. That's why we need to move cursor to different position so fish image will be in the middle of the window
-		ImGui::SetCursorPos(ImVec2(6, 6));
-	}
-	else
-	{
-		ImGui::SetCursorPos(ImVec2(0, 0));
-	}
+	ImGui::SetCursorPos(ImVec2(0, 0));
 
 	if (fishes[i].getTurn())
 	{
